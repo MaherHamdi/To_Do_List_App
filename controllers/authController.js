@@ -28,11 +28,11 @@ async function loginUser (req, res) {
         const {username,password} = req.body;
         const user = await User.findOne({username});
         if(!user) {
-            return res.status(404).send({error:"Authentification failed"});
+            return res.status(404).send({message:"Authentification failed"});
         }
         const isPasswordValid = await user.comparePassword(password);
         if(!isPasswordValid) {
-            return res.status(404).send({error:"Wrong Password"});
+            return res.status(404).send({message:"Wrong Password"});
         }
         let token = jwt.sign({userId:user._id},secretKey, {expiresIn:'1h'});
         let finalData = {

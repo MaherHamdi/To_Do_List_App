@@ -3,6 +3,8 @@ import styles from './Login.module.css';
 import login from '../../assets/login.png';
 import {Button, Input, message} from 'antd';
 import { Link, useNavigate } from 'react-router-dom';
+import { getErrorMessage } from '../../util/GetError';
+import AuthServices from '../../services/authServices';
 
 function Register() {
       const [username,setUsername] = useState("");
@@ -10,8 +12,27 @@ function Register() {
       const [firstName,setFirstName] = useState("");
       const [lastName,setLastName] = useState("");
       const [loading,setLoading] = useState(false);
+      const navigate = useNavigate();
       const handleSubmit = async ()=> {
-        console.log("login");
+        try {
+            setLoading(true);
+            const data = {
+                firstName,
+                lastName,
+                username,
+                password
+            }
+            const response = await AuthServices.registerUser(data);
+            console.log(response.data);
+            setLoading(false);
+            message.success("You are registered successfully");
+            navigate('/login');
+
+        } catch (error) {
+            console.log(error);
+            message.error(getErrorMessage(error));
+            setLoading(false);
+        }
 
     }
     return (
@@ -46,7 +67,7 @@ function Register() {
                  <div className={styles.input__info}>
                    Existing User? <Link to="/login">Login</Link>
                   </div> 
-                  <Button  type="primary" size="large" disabled={!username || !password} onClick={handleSubmit} >Register</Button>
+                  <Button loading={loading} type="primary" size="large" disabled={!username || !password} onClick={handleSubmit} >Register</Button>
              </div>
            </div>
     )
